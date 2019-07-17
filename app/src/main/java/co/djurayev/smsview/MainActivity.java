@@ -5,7 +5,6 @@ import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.widget.Toast;
 import co.djurayev.smsview.keyboard.KeyboardContainer;
 import co.djurayev.smsview.listeners.OnSmsInputCodeListener;
 import co.djurayev.smsview.smsview.InputCodeView;
@@ -42,7 +41,6 @@ public class MainActivity extends AppCompatActivity {
       }
 
       @Override public void onCleared() {
-        Toast.makeText(MainActivity.this, "cleared", Toast.LENGTH_SHORT).show();
       }
     });
 
