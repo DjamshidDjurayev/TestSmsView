@@ -30,6 +30,7 @@ import android.widget.TextView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import co.djurayev.smsview.R;
+import co.djurayev.smsview.keyboard.KeyboardContainer;
 import co.djurayev.smsview.listeners.AnimationsListener;
 import co.djurayev.smsview.listeners.OnSmsInputCodeListener;
 import co.djurayev.smsview.utils.Utils;
@@ -66,7 +67,7 @@ public class InputCodeView extends FrameLayout {
   private final List<TextView> inputs = new ArrayList<>(6);
   private final List<View> containers = new ArrayList<>(7);
 
-  private OnSmsInputCodeListener listener;
+  private OnSmsInputCodeListener smsInputCodeListener;
   private int cursorPosition = 0;
   private Animation viewAnimation;
   private int inputTextColor;
@@ -77,7 +78,10 @@ public class InputCodeView extends FrameLayout {
   private int inputMargin;
   private float separatorSize;
   private int separatorColor;
+  private boolean autoClearOnError = false;
   private Handler handler;
+
+  private KeyboardContainer keyboardContainer;
 
   public InputCodeView(@NonNull Context context) {
     super(context);
@@ -186,8 +190,8 @@ public class InputCodeView extends FrameLayout {
     separator.setTextColor(separatorColor);
   }
 
-  public void setListener(OnSmsInputCodeListener listener) {
-    this.listener = listener;
+  public void setSmsInputCodeListener(OnSmsInputCodeListener smsInputCodeListener) {
+    this.smsInputCodeListener = smsInputCodeListener;
   }
 
   @MainThread public void add(int value, boolean animated) {
@@ -218,8 +222,8 @@ public class InputCodeView extends FrameLayout {
       animatorSet.start();
     }
 
-    if (cursorPosition == inputs.size() && listener != null) {
-      listener.onInputCompleted(getFullCode());
+    if (cursorPosition == inputs.size() && smsInputCodeListener != null) {
+      smsInputCodeListener.onInputCompleted(getFullCode());
     }
   }
 
@@ -265,14 +269,14 @@ public class InputCodeView extends FrameLayout {
       codeView.setText("");
     }
 
-    if (listener != null && cursorPosition == 0) {
-      listener.onCleared();
+    if (smsInputCodeListener != null && cursorPosition == 0) {
+      smsInputCodeListener.onCleared();
     }
   }
 
   @MainThread public void clearAll(final boolean animated, int delayTime) {
     if (cursorPosition != 0) {
-      setCursorPosition(inputs.size() - 1);
+      setCursorPosition(inputs.size());
 
       for (int i = 0; i < inputs.size(); i++) {
         handler.postDelayed(() -> delete(animated), delayTime + delayTime * i);
@@ -297,6 +301,8 @@ public class InputCodeView extends FrameLayout {
   public void showErrorView() {
     if (viewAnimation != null && !viewAnimation.hasEnded()) viewAnimation.cancel();
 
+    if (keyboardContainer != null) keyboardContainer.setIsEnabled(false);
+
     viewAnimation = AnimationUtils.loadAnimation(getContext(), R.anim.shake);
     viewAnimation.setAnimationListener(new AnimationsListener() {
       @Override public void onAnimationStart(Animation animation) {
@@ -305,6 +311,12 @@ public class InputCodeView extends FrameLayout {
 
       @Override public void onAnimationEnd(Animation animation) {
         resetViews();
+
+        if (autoClearOnError) {
+          clearAll(true, 100);
+        } else {
+          if (keyboardContainer != null) keyboardContainer.setIsEnabled(true);
+        }
       }
     });
     startAnimation(viewAnimation);
@@ -329,5 +341,13 @@ public class InputCodeView extends FrameLayout {
 
   private void setCursorPosition(int start) {
     cursorPosition = start;
+  }
+
+  public void setKeyboardContainer(KeyboardContainer keyboardContainer) {
+    this.keyboardContainer = keyboardContainer;
+  }
+
+  public void setAutoClearOnError(boolean autoClearOnError) {
+    this.autoClearOnError = autoClearOnError;
   }
 }

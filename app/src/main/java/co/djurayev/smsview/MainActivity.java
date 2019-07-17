@@ -24,7 +24,7 @@ public class MainActivity extends AppCompatActivity {
     keyboardContainer = findViewById(R.id.keyboard_container);
     inputCodeView = findViewById(R.id.input_code_view);
 
-    keyboardContainer.setOnKeyPressListener(keyCode -> {
+    keyboardContainer.setOnKeyboardKeyListener(keyCode -> {
       if (keyCode >= 0) {
         inputCodeView.add(keyCode, true);
       } else {
@@ -33,14 +33,20 @@ public class MainActivity extends AppCompatActivity {
     });
 
     keyboardContainer.displayKeyboard();
+    inputCodeView.setKeyboardContainer(keyboardContainer);
+    inputCodeView.setAutoClearOnError(false);
 
-    inputCodeView.setListener(new OnSmsInputCodeListener() {
+    inputCodeView.setSmsInputCodeListener(new OnSmsInputCodeListener() {
       @Override public void onInputCompleted(@NonNull String code) {
         keyboardContainer.setIsEnabled(true);
-        //inputCodeView.showErrorView();
+
+        if (!"300000".equals(code)) {
+          inputCodeView.showErrorView();
+        }
       }
 
       @Override public void onCleared() {
+        keyboardContainer.setIsEnabled(true);
       }
     });
 

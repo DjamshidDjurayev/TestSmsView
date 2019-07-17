@@ -115,13 +115,16 @@ public class KeyboardContainer extends FrameLayout {
 
   public void setIsEnabled(boolean enabled) {
     this.isEnabled = enabled;
+    this.setEnabled(enabled);
+    this.setClickable(enabled);
+    this.setFocusable(enabled);
   }
 
   public boolean isAnimating() {
     return isAnimating;
   }
 
-  public void setOnKeyPressListener(OnKeyboardKeyListener onKeyPressListener) {
+  public void setOnKeyboardKeyListener(OnKeyboardKeyListener onKeyPressListener) {
     this.onKeyPressListener = onKeyPressListener;
   }
 }
