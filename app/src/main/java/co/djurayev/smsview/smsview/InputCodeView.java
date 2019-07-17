@@ -204,7 +204,7 @@ public class InputCodeView extends FrameLayout {
       AnimatorSet animatorSet = new AnimatorSet();
 
       ObjectAnimator alphaAnimator = ObjectAnimator.ofFloat(codeView, View.ALPHA, 0,1)
-          .setDuration(ANIMATION_DURATION / 2);
+          .setDuration(300);
       alphaAnimator.setInterpolator(new AccelerateDecelerateInterpolator());
 
       ObjectAnimator translateAnimator =
@@ -240,19 +240,27 @@ public class InputCodeView extends FrameLayout {
     codeView.setTag("");
 
     if (animated) {
-      ObjectAnimator animator =
+      AnimatorSet animatorSet = new AnimatorSet();
+
+      ObjectAnimator alphaAnimator = ObjectAnimator.ofFloat(codeView, View.ALPHA, 1,0)
+          .setDuration(300);
+      alphaAnimator.setInterpolator(new AccelerateDecelerateInterpolator());
+
+      ObjectAnimator translationAnimator =
           ObjectAnimator.ofFloat(codeView, "translationY", 0, codeView.getHeight())
               .setDuration(ANIMATION_DURATION);
-      animator.setInterpolator(new AnticipateOvershootInterpolator());
-      animator.addListener(new AnimatorListenerAdapter() {
+      translationAnimator.setInterpolator(new AnticipateOvershootInterpolator());
+      translationAnimator.addListener(new AnimatorListenerAdapter() {
         @Override public void onAnimationEnd(Animator animation) {
           if (TextUtils.isEmpty(codeView.getTag().toString())) {
             codeView.setText("");
           }
         }
       });
+
       codeView.clearAnimation();
-      animator.start();
+      animatorSet.playTogether(alphaAnimator, translationAnimator);
+      animatorSet.start();
     } else {
       codeView.setText("");
     }
