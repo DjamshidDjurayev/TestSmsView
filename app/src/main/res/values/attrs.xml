@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <declare-styleable name="InputCodeView">
+    <attr name="inputMargin" format="dimension"/>
+    <attr name="underlineWidth" format="dimension"/>
+    <attr name="underHeight" format="dimension"/>
+    <attr name="underlineColor" format="color"/>
+    <attr name="inputTextSize" format="dimension"/>
+    <attr name="inputTextColor" format="color"/>
+    <attr name="separatorColor" format="color"/>
+    <attr name="separatorSize" format="dimension"/>
+  </declare-styleable>
+</resources>
