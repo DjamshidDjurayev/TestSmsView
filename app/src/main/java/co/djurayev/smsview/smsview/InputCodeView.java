@@ -207,7 +207,7 @@ public class InputCodeView extends FrameLayout {
     if (animated) {
       AnimatorSet animatorSet = new AnimatorSet();
 
-      ObjectAnimator alphaAnimator = ObjectAnimator.ofFloat(codeView, View.ALPHA, 0,1)
+      ObjectAnimator alphaAnimator = ObjectAnimator.ofFloat(codeView, "alpha", 0,1)
           .setDuration(300);
       alphaAnimator.setInterpolator(new AccelerateDecelerateInterpolator());
 
@@ -246,7 +246,7 @@ public class InputCodeView extends FrameLayout {
     if (animated) {
       AnimatorSet animatorSet = new AnimatorSet();
 
-      ObjectAnimator alphaAnimator = ObjectAnimator.ofFloat(codeView, View.ALPHA, 1,0)
+      ObjectAnimator alphaAnimator = ObjectAnimator.ofFloat(codeView, "alpha", 1,0)
           .setDuration(300);
       alphaAnimator.setInterpolator(new AccelerateDecelerateInterpolator());
 
