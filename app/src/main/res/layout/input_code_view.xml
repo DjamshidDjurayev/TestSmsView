@@ -1,196 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_gravity="center"
->
+<merge
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
-  <LinearLayout
-      android:id="@+id/container_1"
-      android:layout_width="wrap_content"
+  <co.djurayev.smsview.smsview.InputItem
+      android:id="@+id/input_1"
       android:layout_height="wrap_content"
-      android:gravity="center_horizontal"
-      android:orientation="vertical"
-  >
+      android:layout_width="wrap_content"/>
 
-    <TextView
-        android:id="@+id/input_1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="40sp"
-        android:textStyle="bold"
-        tools:text="1"
-    />
-
-    <View
-        android:id="@+id/underline_1"
-        android:layout_width="20dp"
-        android:layout_height="1dp"
-        android:background="@color/mid_grey"
-    />
-
-  </LinearLayout>
-
-  <LinearLayout
-      android:id="@+id/container_2"
-      android:layout_width="wrap_content"
+  <co.djurayev.smsview.smsview.InputItem
+      android:id="@+id/input_2"
       android:layout_height="wrap_content"
-      android:layout_marginLeft="5dp"
-      android:gravity="center_horizontal"
-      android:orientation="vertical"
-  >
+      android:layout_width="wrap_content"/>
 
-    <TextView
-        android:id="@+id/input_2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="40sp"
-        android:textStyle="bold"
-        tools:text="2"
-    />
-
-    <View
-        android:id="@+id/underline_2"
-        android:layout_width="20dp"
-        android:layout_height="1dp"
-        android:background="@color/mid_grey"
-    />
-
-  </LinearLayout>
-
-  <LinearLayout
-      android:id="@+id/container_3"
-      android:layout_width="wrap_content"
+  <co.djurayev.smsview.smsview.InputItem
+      android:id="@+id/input_3"
       android:layout_height="wrap_content"
-      android:layout_marginLeft="5dp"
-      android:gravity="center_horizontal"
-      android:orientation="vertical"
-  >
+      android:layout_width="wrap_content"/>
 
-    <TextView
-        android:id="@+id/input_3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="40sp"
-        android:textStyle="bold"
-        tools:text="2"
-    />
-
-    <View
-        android:id="@+id/underline_3"
-        android:layout_width="20dp"
-        android:layout_height="1dp"
-        android:background="@color/mid_grey"
-    />
-
-  </LinearLayout>
-
-  <LinearLayout
-      android:id="@+id/separator_container"
-      android:layout_width="wrap_content"
+  <co.djurayev.smsview.smsview.InputItem
+      android:id="@+id/divider"
       android:layout_height="wrap_content"
-      android:layout_marginLeft="5dp"
-      android:gravity="center_horizontal"
-      android:orientation="vertical"
-  >
+      android:layout_width="wrap_content"/>
 
-    <TextView
-        android:id="@+id/separator"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="-"
-        android:textSize="40sp"
-        android:textStyle="bold"
-    />
-
-    <View
-        android:layout_width="20dp"
-        android:layout_height="1dp"
-    />
-
-  </LinearLayout>
-
-  <LinearLayout
-      android:id="@+id/container_4"
-      android:layout_width="wrap_content"
+  <co.djurayev.smsview.smsview.InputItem
+      android:id="@+id/input_4"
       android:layout_height="wrap_content"
-      android:layout_marginLeft="5dp"
-      android:gravity="center_horizontal"
-      android:orientation="vertical"
-  >
+      android:layout_width="wrap_content"/>
 
-    <TextView
-        android:id="@+id/input_4"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="40sp"
-        android:textStyle="bold"
-        tools:text="2"
-    />
-
-    <View
-        android:id="@+id/underline_4"
-        android:layout_width="20dp"
-        android:layout_height="1dp"
-        android:background="@color/mid_grey"
-    />
-
-  </LinearLayout>
-
-
-  <LinearLayout
-      android:id="@+id/container_5"
-      android:layout_width="wrap_content"
+  <co.djurayev.smsview.smsview.InputItem
+      android:id="@+id/input_5"
       android:layout_height="wrap_content"
-      android:layout_marginLeft="5dp"
-      android:gravity="center_horizontal"
-      android:orientation="vertical"
-  >
+      android:layout_width="wrap_content"/>
 
-    <TextView
-        android:id="@+id/input_5"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="40sp"
-        android:textStyle="bold"
-        tools:text="2"
-    />
-
-    <View
-        android:id="@+id/underline_5"
-        android:layout_width="20dp"
-        android:layout_height="1dp"
-        android:background="@color/mid_grey"
-    />
-
-  </LinearLayout>
-
-  <LinearLayout
-      android:id="@+id/container_6"
-      android:layout_width="wrap_content"
+  <co.djurayev.smsview.smsview.InputItem
+      android:id="@+id/input_6"
       android:layout_height="wrap_content"
-      android:layout_marginLeft="5dp"
-      android:gravity="center_horizontal"
-      android:orientation="vertical"
-  >
+      android:layout_width="wrap_content"/>
 
-    <TextView
-        android:id="@+id/input_6"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="40sp"
-        android:textStyle="bold"
-        tools:text="2"
-    />
-
-    <View
-        android:id="@+id/underline_6"
-        android:layout_width="20dp"
-        android:layout_height="1dp"
-        android:background="@color/mid_grey"
-    />
-
-  </LinearLayout>
-
-</LinearLayout>
+</merge>

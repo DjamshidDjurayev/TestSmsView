@@ -6,4 +6,6 @@ public interface OnSmsInputCodeListener {
   void onInputCompleted(@NonNull String code);
 
   void onCleared();
+
+  void onError(String code);
 }

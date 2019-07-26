@@ -4,8 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
->
+    android:orientation="vertical">
 
   <co.djurayev.smsview.smsview.InputCodeView
       android:id="@+id/input_code_view"
@@ -14,11 +13,12 @@
       android:layout_above="@+id/keyboard_container"
       android:layout_alignParentTop="true"
       android:layout_centerHorizontal="true"
-      app:inputMargin="6dp"
+      android:layout_centerVertical="true"
+      android:gravity="center"
+      app:inputMargin="8dp"
       app:inputTextColor="@color/black"
       app:underlineColor="@color/mid_grey"
-      app:underlineWidth="30dp"
-  />
+      app:underlineWidth="30dp"/>
 
   <co.djurayev.smsview.keyboard.KeyboardContainer
       android:id="@+id/keyboard_container"

@@ -1,9 +1,5 @@
 package co.djurayev.smsview.smsview;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
-import android.animation.AnimatorSet;
-import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Color;
@@ -17,18 +13,10 @@ import android.support.annotation.RequiresApi;
 import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.util.AttributeSet;
-import android.util.TypedValue;
-import android.view.View;
-import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.Gravity;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.view.animation.AnticipateOvershootInterpolator;
-import android.view.animation.OvershootInterpolator;
-import android.widget.FrameLayout;
 import android.widget.LinearLayout;
-import android.widget.TextView;
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import co.djurayev.smsview.R;
 import co.djurayev.smsview.keyboard.KeyboardContainer;
 import co.djurayev.smsview.listeners.AnimationsListener;
@@ -37,39 +25,10 @@ import co.djurayev.smsview.utils.Utils;
 import java.util.ArrayList;
 import java.util.List;
 
-public class InputCodeView extends FrameLayout {
-  @BindView(R.id.underline_1) View underline1;
-  @BindView(R.id.underline_2) View underline2;
-  @BindView(R.id.underline_3) View underline3;
-  @BindView(R.id.underline_4) View underline4;
-  @BindView(R.id.underline_5) View underline5;
-  @BindView(R.id.underline_6) View underline6;
-
-  @BindView(R.id.input_1) TextView input1;
-  @BindView(R.id.input_2) TextView input2;
-  @BindView(R.id.input_3) TextView input3;
-  @BindView(R.id.input_4) TextView input4;
-  @BindView(R.id.input_5) TextView input5;
-  @BindView(R.id.input_6) TextView input6;
-
-  @BindView(R.id.container_1) View container1;
-  @BindView(R.id.container_2) View container2;
-  @BindView(R.id.container_3) View container3;
-  @BindView(R.id.container_4) View container4;
-  @BindView(R.id.container_5) View container5;
-  @BindView(R.id.container_6) View container6;
-  @BindView(R.id.separator_container) View separatorContainer;
-  @BindView(R.id.separator) TextView separator;
-
-  private static final int ANIMATION_DURATION = 400;
-
-  private final List<View> underlines = new ArrayList<>(6);
-  private final List<TextView> inputs = new ArrayList<>(6);
-  private final List<View> containers = new ArrayList<>(7);
+public class InputCodeView extends LinearLayout {
 
   private OnSmsInputCodeListener smsInputCodeListener;
   private int cursorPosition = 0;
-  private Animation viewAnimation;
   private int inputTextColor;
   private int underlineColor;
   private int underlineWidth;
@@ -79,9 +38,15 @@ public class InputCodeView extends FrameLayout {
   private float separatorSize;
   private int separatorColor;
   private boolean autoClearOnError = false;
-  private Handler handler;
+  private boolean isAnimated = false;
+  private int delayTime = 100;
 
+  private Handler handler;
   private KeyboardContainer keyboardContainer;
+  private Animation shakeAnimation;
+  private InputItem separator;
+
+  private final List<InputItem> inputs = new ArrayList<>(6);
 
   public InputCodeView(@NonNull Context context) {
     super(context);
@@ -108,30 +73,22 @@ public class InputCodeView extends FrameLayout {
   private void initialize(@NonNull Context context, @Nullable AttributeSet attrs) {
     handler = new Handler(Looper.getMainLooper());
 
-    View rootView = inflate(getContext(), R.layout.input_code_view, this);
-    ButterKnife.bind(rootView);
+    LinearLayout.LayoutParams params
+        = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+    params.gravity = Gravity.CENTER;
+    setLayoutParams(params);
+    setOrientation(HORIZONTAL);
 
-    this.containers.add(container1);
-    this.containers.add(container2);
-    this.containers.add(container3);
-    this.containers.add(separatorContainer);
-    this.containers.add(container4);
-    this.containers.add(container5);
-    this.containers.add(container6);
+    inflate(getContext(), R.layout.input_code_view, this);
 
-    this.inputs.add(input1);
-    this.inputs.add(input2);
-    this.inputs.add(input3);
-    this.inputs.add(input4);
-    this.inputs.add(input5);
-    this.inputs.add(input6);
+    separator = findViewById(R.id.divider);
 
-    this.underlines.add(underline1);
-    this.underlines.add(underline2);
-    this.underlines.add(underline3);
-    this.underlines.add(underline4);
-    this.underlines.add(underline5);
-    this.underlines.add(underline6);
+    this.inputs.add(findViewById(R.id.input_1));
+    this.inputs.add(findViewById(R.id.input_2));
+    this.inputs.add(findViewById(R.id.input_3));
+    this.inputs.add(findViewById(R.id.input_4));
+    this.inputs.add(findViewById(R.id.input_5));
+    this.inputs.add(findViewById(R.id.input_6));
 
     if (attrs != null) {
       TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.InputCodeView);
@@ -167,60 +124,32 @@ public class InputCodeView extends FrameLayout {
     inputMargin = Utils.toPx(getContext(), 5);
     separatorSize = 30;
     separatorColor = Color.GRAY;
+
+    setValues();
   }
 
   private void setValues() {
-    for (int i = 0; i < underlines.size(); i++) {
-      underlines.get(i).setBackgroundColor(underlineColor);
-      underlines.get(i)
-          .setLayoutParams(new LinearLayout.LayoutParams(underlineWidth, underlineHeight));
-
-      inputs.get(i).setTextSize(TypedValue.COMPLEX_UNIT_SP, inputTextSize);
-      inputs.get(i).setTextColor(inputTextColor);
+    for (int i = 0; i < inputs.size(); i++) {
+      InputItem item = inputs.get(i);
+      item.setUnderlineColor(underlineColor);
+      item.setUnderlineParams(underlineWidth, underlineHeight);
+      item.setTextSize(inputTextSize);
+      item.setTextColor(inputTextColor);
+      item.setContainerMargin(inputMargin);
     }
 
-    for (int i = 0; i < containers.size(); i++) {
-      View view = containers.get(i);
-      LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) view.getLayoutParams();
-      params.setMargins(inputMargin, params.topMargin, inputMargin, params.bottomMargin);
-      view.setLayoutParams(params);
-    }
-
-    separator.setTextSize(TypedValue.COMPLEX_UNIT_SP, separatorSize);
+    separator.setInputText("-");
+    separator.setTextSize(separatorSize);
     separator.setTextColor(separatorColor);
+    separator.setUnderlineColor(android.R.color.transparent);
   }
 
-  public void setSmsInputCodeListener(OnSmsInputCodeListener smsInputCodeListener) {
-    this.smsInputCodeListener = smsInputCodeListener;
-  }
-
-  @MainThread public void add(int value, boolean animated) {
+  @MainThread public void add(int value) {
     if (cursorPosition >= inputs.size()) return;
 
-    TextView codeView = inputs.get(cursorPosition);
+    inputs.get(cursorPosition).add(isAnimated, value);
 
     cursorPosition++;
-
-    codeView.setText(String.valueOf(value));
-    codeView.setTag("added");
-
-    if (animated) {
-      AnimatorSet animatorSet = new AnimatorSet();
-
-      ObjectAnimator alphaAnimator = ObjectAnimator.ofFloat(codeView, "alpha", 0,1)
-          .setDuration(300);
-      alphaAnimator.setInterpolator(new AccelerateDecelerateInterpolator());
-
-      ObjectAnimator translateAnimator =
-          ObjectAnimator.ofFloat(codeView, "translationY", codeView.getHeight(), 0)
-              .setDuration(ANIMATION_DURATION);
-      translateAnimator.setInterpolator(new OvershootInterpolator());
-
-      animatorSet.playTogether(alphaAnimator, translateAnimator);
-
-      codeView.clearAnimation();
-      animatorSet.start();
-    }
 
     if (cursorPosition == inputs.size() && smsInputCodeListener != null) {
       smsInputCodeListener.onInputCompleted(getFullCode());
@@ -230,61 +159,34 @@ public class InputCodeView extends FrameLayout {
   public String getFullCode() {
     StringBuilder stringBuilder = new StringBuilder(6);
     for (int i = 0; i < inputs.size(); i++) {
-      stringBuilder.append(inputs.get(i).getText().toString().trim());
+      stringBuilder.append(inputs.get(i).getInputText().toString().trim());
     }
     return String.valueOf(stringBuilder);
   }
 
-  @MainThread public void delete(boolean animated) {
+  @MainThread public void delete() {
     if (cursorPosition <= 0) return;
 
     cursorPosition--;
 
-    final TextView codeView = inputs.get(cursorPosition);
-    codeView.setTag("");
-
-    if (animated) {
-      AnimatorSet animatorSet = new AnimatorSet();
-
-      ObjectAnimator alphaAnimator = ObjectAnimator.ofFloat(codeView, "alpha", 1,0)
-          .setDuration(300);
-      alphaAnimator.setInterpolator(new AccelerateDecelerateInterpolator());
-
-      ObjectAnimator translationAnimator =
-          ObjectAnimator.ofFloat(codeView, "translationY", 0, codeView.getHeight())
-              .setDuration(ANIMATION_DURATION);
-      translationAnimator.setInterpolator(new AnticipateOvershootInterpolator());
-      translationAnimator.addListener(new AnimatorListenerAdapter() {
-        @Override public void onAnimationEnd(Animator animation) {
-          if (TextUtils.isEmpty(codeView.getTag().toString())) {
-            codeView.setText("");
-          }
-        }
-      });
-
-      codeView.clearAnimation();
-      animatorSet.playTogether(alphaAnimator, translationAnimator);
-      animatorSet.start();
-    } else {
-      codeView.setText("");
-    }
+    inputs.get(cursorPosition).remove(isAnimated);
 
     if (smsInputCodeListener != null && cursorPosition == 0) {
       smsInputCodeListener.onCleared();
     }
   }
 
-  @MainThread public void clearAll(final boolean animated, int delayTime) {
+  @MainThread public void clearAll() {
     if (cursorPosition != 0) {
       setCursorPosition(inputs.size());
 
       for (int i = 0; i < inputs.size(); i++) {
-        handler.postDelayed(() -> delete(animated), delayTime + delayTime * i);
+        handler.postDelayed(this::delete, delayTime + delayTime * i);
       }
     }
   }
 
-  @MainThread public void addAll(String fullInput, final boolean animated, int delayTime) {
+  @MainThread public void addAll(String fullInput) {
     if (TextUtils.isEmpty(fullInput)) return;
 
     setCursorPosition(0);
@@ -294,46 +196,50 @@ public class InputCodeView extends FrameLayout {
     for (int i = 0; i < inputArray.length; i++) {
       final int finalI = i;
       handler.postDelayed(
-          () -> add(Integer.valueOf(String.valueOf(inputArray[finalI])), animated), delayTime + delayTime * i);
+          () -> add(Integer.valueOf(String.valueOf(inputArray[finalI]))),
+          delayTime + delayTime * i);
     }
   }
 
   public void showErrorView() {
-    if (viewAnimation != null && !viewAnimation.hasEnded()) viewAnimation.cancel();
+    if (shakeAnimation != null && !shakeAnimation.hasEnded()) shakeAnimation.cancel();
 
     if (keyboardContainer != null) keyboardContainer.setIsEnabled(false);
 
-    viewAnimation = AnimationUtils.loadAnimation(getContext(), R.anim.shake);
-    viewAnimation.setAnimationListener(new AnimationsListener() {
+    shakeAnimation = AnimationUtils.loadAnimation(getContext(), R.anim.shake);
+    shakeAnimation.setAnimationListener(new AnimationsListener() {
       @Override public void onAnimationStart(Animation animation) {
-        shakeViews();
+        setErrorViews();
+
+        if (smsInputCodeListener != null) smsInputCodeListener.onError(getFullCode());
       }
 
       @Override public void onAnimationEnd(Animation animation) {
         resetViews();
 
         if (autoClearOnError) {
-          clearAll(true, 100);
+          clearAll();
         } else {
           if (keyboardContainer != null) keyboardContainer.setIsEnabled(true);
         }
       }
     });
-    startAnimation(viewAnimation);
+    startAnimation(shakeAnimation);
   }
 
   private void resetViews() {
-    for (int i = 0; i < underlines.size(); i++) {
-      underlines.get(i).setBackgroundColor(underlineColor);
+    for (int i = 0; i < inputs.size(); i++) {
+      inputs.get(i).setUnderlineColor(underlineColor);
       inputs.get(i).setTextColor(inputTextColor);
     }
+
     separator.setTextColor(separatorColor);
   }
 
-  private void shakeViews() {
-    for (int i = 0; i < underlines.size(); i++) {
-      underlines.get(i)
-          .setBackgroundColor(ContextCompat.getColor(getContext(), R.color.red));
+  private void setErrorViews() {
+    for (int i = 0; i < inputs.size(); i++) {
+      inputs.get(i)
+          .setUnderlineColor(ContextCompat.getColor(getContext(), R.color.red));
       inputs.get(i).setTextColor(ContextCompat.getColor(getContext(), R.color.red));
     }
     separator.setTextColor(ContextCompat.getColor(getContext(), R.color.red));
@@ -345,9 +251,25 @@ public class InputCodeView extends FrameLayout {
 
   public void setKeyboardContainer(KeyboardContainer keyboardContainer) {
     this.keyboardContainer = keyboardContainer;
+
+    keyboardContainer.setOnKeyboardKeyListener(keyCode -> {
+      if (keyCode >= 0) {
+        add(keyCode);
+      } else {
+        delete();
+      }
+    });
   }
 
   public void setAutoClearOnError(boolean autoClearOnError) {
     this.autoClearOnError = autoClearOnError;
+  }
+
+  public void setAnimated(boolean animated) {
+    this.isAnimated = animated;
+  }
+
+  public void setSmsInputCodeListener(OnSmsInputCodeListener smsInputCodeListener) {
+    this.smsInputCodeListener = smsInputCodeListener;
   }
 }
